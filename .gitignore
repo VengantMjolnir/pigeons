@@ -5,6 +5,8 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 
+Assets/Offline*
+
 # Visual Studio cache directory
 .vs/
 
@@ -23,6 +25,9 @@ ExportedObj/
 *.svd
 *.pdb
 *.opendb
+*MonoScriptCache.cpp
+
+*ProjectSettings.txt*
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -30,6 +35,12 @@ ExportedObj/
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+# Mac Garb:
+*DS_STORE
+
+# Vim Garb:
+*~
 
 # Builds
 *.apk
