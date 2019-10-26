@@ -5,7 +5,8 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Transform target;
-    public float lerpFactor;
+    public float lookLerpFactor = 0.02f;
+    public float positionLerpFactor = 0.05f;
 
     public float defaultAngle = 0;
     public float defaultDistance = 15;
@@ -87,9 +88,9 @@ public class CameraController : MonoBehaviour
             targetHeight /= count;
         }
 
-        _angle = Mathf.LerpAngle(_angle, targetAngle, lerpFactor);
-        _distance = Mathf.Lerp(_distance, targetDistance, lerpFactor);
-        _height = Mathf.Lerp(_height, targetHeight, lerpFactor);
+        _angle = Mathf.LerpAngle(_angle, targetAngle, lookLerpFactor);
+        _distance = Mathf.Lerp(_distance, targetDistance, lookLerpFactor);
+        _height = Mathf.Lerp(_height, targetHeight, lookLerpFactor);
 
         Vector3 pos = target.position;
         Quaternion rotation = Quaternion.Euler(0, _angle, 0);
@@ -97,7 +98,7 @@ public class CameraController : MonoBehaviour
         forward.y += _height;
         Vector3 dir = rotation * forward;
 
-        _transform.position = pos + dir;
+        _transform.position = Vector3.Lerp(_transform.position, pos + dir, positionLerpFactor);
 
         _transform.LookAt(target);
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class GroundMovement : MonoBehaviour
@@ -9,10 +10,12 @@ public class GroundMovement : MonoBehaviour
     public float force = 10f;
     public float jump = 10f;
     public float jumpInterval = 1f;
+    public Animator animator;
 
     private Rigidbody _rigidbody;
     private Transform _transform;
     private float _jumpDelay;
+    private int WALK = Animator.StringToHash("Walk");
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +52,8 @@ public class GroundMovement : MonoBehaviour
         _rigidbody.AddForce(forward * v * force, ForceMode.Impulse);
         _rigidbody.AddForce(right * h * force, ForceMode.Impulse);
         _rigidbody.AddForce(Vector3.up * jump, ForceMode.Impulse);
+
+        animator.Play(WALK);
     }
 
     private void FixedUpdate()
