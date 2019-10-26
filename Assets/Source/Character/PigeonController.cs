@@ -173,6 +173,10 @@ public class PigeonController : MonoBehaviour
         {
             CameraController.Instance.EnteredCameraBound(bound);
         }
+        else if (other.gameObject.CompareTag("Balloon"))
+        {
+            other.gameObject.SetActive(false);
+        }
     }
 
     private void OnTriggerExit(Collider other)
