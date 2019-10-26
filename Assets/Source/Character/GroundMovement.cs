@@ -30,13 +30,6 @@ public class GroundMovement : MonoBehaviour
             return;
         }
 
-        _jumpDelay += jumpInterval;
-        Vector3 forward = CameraController.Instance.transform.forward;
-        Vector3 right = CameraController.Instance.transform.right;
-        forward.y = 0;
-        forward.Normalize();
-        right.y = 0;
-        right.Normalize();
         float h = Input.GetAxis(horizontalAxis);
         float v = Input.GetAxis(verticalAxis);
 
@@ -44,6 +37,14 @@ public class GroundMovement : MonoBehaviour
         {
             return;
         }
+        
+        Vector3 forward = CameraController.Instance.transform.forward;
+        Vector3 right = CameraController.Instance.transform.right;
+        forward.y = 0;
+        forward.Normalize();
+        right.y = 0;
+        right.Normalize();
+        _jumpDelay += jumpInterval;
 
         _rigidbody.AddForce(forward * v * force, ForceMode.Impulse);
         _rigidbody.AddForce(right * h * force, ForceMode.Impulse);

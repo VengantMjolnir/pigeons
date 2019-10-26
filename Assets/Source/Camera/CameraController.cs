@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour
     public float defaultDistance = 15;
     public float defaultHeight = 10;
 
+    public bool showBounds = true;
+
     private Transform _transform;
     private float _angle;
     private float _height;
