@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class CameraBound : MonoBehaviour
 {
     public float distance = 10f;
@@ -17,7 +18,7 @@ public class CameraBound : MonoBehaviour
 
     public void Update()
     {
-        bool showBounds = CameraController.Instance.showBounds;
+        bool showBounds = Application.isPlaying ? CameraController.Instance.showBoundsInGame : CameraController.Instance.showBoundsInEditor;
         if (showBounds != _mesh.enabled)
         {
             _mesh.enabled = showBounds;

@@ -1581,7 +1581,8 @@ MonoBehaviour:
   defaultAngle: 0
   defaultDistance: 10
   defaultHeight: 10
-  showBounds: 0
+  showBoundsInGame: 0
+  showBoundsInEditor: 1
 --- !u!4 &1689739023 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: fee8ff90287f4cb4ba7c7f079bda36d2,
