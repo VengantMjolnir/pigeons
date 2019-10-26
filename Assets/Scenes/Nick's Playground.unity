@@ -2105,6 +2105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OffsetScale: 3.1415927
+  PopPrefab: {fileID: 0}
 --- !u!4 &1248994001 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5067760135779036201, guid: ffdd98f6e67294e50a40397d28b44d9a,

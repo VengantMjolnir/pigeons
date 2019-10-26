@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BalloonFloat : MonoBehaviour
+public class BalloonController: MonoBehaviour
 {
     public float OffsetScale = Mathf.PI;
+    public GameObject PopPrefab;
     private Vector3 _startPos;
     private float _arbitraryOffset;
 
@@ -19,5 +20,10 @@ public class BalloonFloat : MonoBehaviour
     void Update()
     {
         transform.position = _startPos + new Vector3(0, Mathf.Sin(Time.time + _arbitraryOffset), 0);
+    }
+
+    private void OnDisable()
+    {
+        Instantiate(PopPrefab, transform.position, Quaternion.identity);
     }
 }

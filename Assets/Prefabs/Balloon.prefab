@@ -199,3 +199,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe21d635c0d164746a59bde5c566555f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OffsetScale: 3.1415927
+  PopPrefab: {fileID: 2400917173675247068, guid: 86082e252fabe46d193ab10eda0750cf,
+    type: 3}
