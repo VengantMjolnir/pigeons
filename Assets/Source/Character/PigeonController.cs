@@ -16,6 +16,8 @@ public class PigeonController : MonoBehaviour
     public float BobForce = 2f;
     public float BobInterval = 0.5f;
     public float PeckDuration = 1.5f;
+    [Tooltip("Min and Max for random idle time(in seconds)")]
+    public Vector2 IdleTime = new Vector2(5f, 10f);
     [Tooltip("This needs to be large enought that a 'bob' still counts as on ground. Measured from the center of the object")]
     public float GroundClearance = 0.6f;
     [Header("Flight Movement")]
@@ -44,6 +46,8 @@ public class PigeonController : MonoBehaviour
     // Ground
     private float _bobDelay;
     private bool _walkRequested;
+    private float _idleTime;
+    private float _idleAccumulator;
     // Animator states and parameters
     private int WALK = Animator.StringToHash("Walk");
     private int BOB = Animator.StringToHash("Bob");
@@ -56,16 +60,32 @@ public class PigeonController : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _transform = GetComponent<Transform>();
+
+        ResetIdle(true);
+    }
+
+    private void ResetIdle(bool pickNewTime = false)
+    {
+        _idleAccumulator = 0f;
+        if (pickNewTime)
+        {
+            _idleTime = Random.Range(IdleTime.x, IdleTime.y);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown(FlapButton) && _timeSinceLastFlap >= FlapCooldown)
+        bool idle = true;
+        if (Input.GetButtonDown(FlapButton))
         {
-            _flapRequested = true;
             animator.SetTrigger(FLAP);
-            _timeSinceLastFlap = 0;
+            if (_timeSinceLastFlap >= FlapCooldown)
+            {
+                _flapRequested = true;
+                _timeSinceLastFlap = 0;
+            }
+            idle = false;
         }
         else if (_timeSinceLastFlap < FlapCooldown)
         {
@@ -77,24 +97,67 @@ public class PigeonController : MonoBehaviour
 
         if (_onGround && Input.GetButtonDown(PeckButton))
         {
-            Debug.Log("Peck! Peck!");
-            animator.SetTrigger(PECK);
-            _bobDelay = PeckDuration;
+            PeckAction();
+            idle = false;
         }
 
-        if (System.Math.Abs(h) < float.Epsilon && System.Math.Abs(v) < float.Epsilon)
+        if (System.Math.Abs(h) > float.Epsilon || System.Math.Abs(v) > float.Epsilon)
+        {
+            Vector3 forward = CameraController.Instance.transform.forward;
+            Vector3 right = CameraController.Instance.transform.right;
+            forward.y = 0;
+            forward.Normalize();
+            right.y = 0;
+            right.Normalize();
+            _desiredDirection = (forward * v) + (right * h);
+            idle = false;
+        }
+        else
         {
             _desiredDirection = Vector3.zero;
-            return;
         }
 
-        Vector3 forward = CameraController.Instance.transform.forward;
-        Vector3 right = CameraController.Instance.transform.right;
-        forward.y = 0;
-        forward.Normalize();
-        right.y = 0;
-        right.Normalize();
-        _desiredDirection = (forward * v) + (right * h);
+        if (idle && _onGround)
+        {
+            _idleAccumulator += Time.deltaTime;
+            if (_idleAccumulator > _idleTime)
+            {
+                PerformIdleAction();
+                ResetIdle(true);
+            }
+        }
+        else
+        {
+            ResetIdle();
+        }
+    }
+
+    private void PeckAction()
+    {
+        Debug.Log("Peck! Peck!");
+        animator.SetTrigger(PECK);
+        _bobDelay = PeckDuration;
+    }
+
+    private void PerformIdleAction()
+    {
+        int choice = Random.Range(0, 3);
+        Debug.Log("Idle Action! " + choice);
+        switch (choice)
+        {
+            case 0:
+                PeckAction();
+                break;
+            case 1:
+            case 2:
+                Vector2 dir = Random.insideUnitCircle;
+                _desiredDirection.x = dir.x;
+                _desiredDirection.z = dir.y;
+                _desiredDirection.y = 0;
+                _desiredDirection.Normalize();
+                Debug.Log("Idle bob!" + _desiredDirection.ToString());
+                break;
+        }
     }
 
     private void FixedUpdate()

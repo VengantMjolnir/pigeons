@@ -6,6 +6,7 @@ public class RotateToVelocityXZ : MonoBehaviour
 {
     public float lerpFactor = 0.1f;
     public float velocityThreshold = 1f;
+    public float rollAmount = -0.1f;
     public Rigidbody body;
 
     // Update is called once per frame
@@ -15,7 +16,12 @@ public class RotateToVelocityXZ : MonoBehaviour
         v.y = 0;
         if (v.sqrMagnitude > velocityThreshold)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(v), lerpFactor);
+            Quaternion look = Quaternion.LookRotation(v);
+            float angle = Vector3.SignedAngle(transform.forward, v, Vector3.up);
+            Debug.Log("Turning: " + angle);
+            Quaternion roll = Quaternion.Euler(0, 0, angle * rollAmount);
+            look *= roll;
+            transform.rotation = Quaternion.Slerp(transform.rotation, look, lerpFactor);
         }
     }
 }
