@@ -9,10 +9,13 @@ public class PigeonController : MonoBehaviour
     public string HorizontalAxis = "Horizontal";
     public string VerticalAxis = "Vertical";
     public string FlapButton = "Jump";
+    public string PeckButton = "Fire1";
+    public string DiveButton = "Fire3";
     [Header("Ground Movement")]
     public float LateralForce = 2.5f;
     public float BobForce = 2f;
     public float BobInterval = 0.5f;
+    public float PeckDuration = 1.5f;
     [Tooltip("This needs to be large enought that a 'bob' still counts as on ground. Measured from the center of the object")]
     public float GroundClearance = 0.6f;
     [Header("Flight Movement")]
@@ -46,6 +49,7 @@ public class PigeonController : MonoBehaviour
     private int BOB = Animator.StringToHash("Bob");
     private int FLAP = Animator.StringToHash("Flap");
     private int ON_GROUND = Animator.StringToHash("OnGround");
+    private int PECK = Animator.StringToHash("Peck");
 
     // Start is called before the first frame update
     void Start()
@@ -70,6 +74,13 @@ public class PigeonController : MonoBehaviour
 
         float h = Input.GetAxis(HorizontalAxis);
         float v = Input.GetAxis(VerticalAxis);
+
+        if (_onGround && Input.GetButtonDown(PeckButton))
+        {
+            Debug.Log("Peck! Peck!");
+            animator.SetTrigger(PECK);
+            _bobDelay = PeckDuration;
+        }
 
         if (System.Math.Abs(h) < float.Epsilon && System.Math.Abs(v) < float.Epsilon)
         {
