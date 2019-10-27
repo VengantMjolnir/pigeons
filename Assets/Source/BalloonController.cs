@@ -22,8 +22,10 @@ public class BalloonController: MonoBehaviour
         transform.position = _startPos + new Vector3(0, Mathf.Sin(Time.time + _arbitraryOffset), 0);
     }
 
-    private void OnDisable()
+    public void Pop()
     {
-        Instantiate(PopPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+        GameObject go = Instantiate(PopPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+        Destroy(go, 5f);
+        Destroy(gameObject);
     }
 }
