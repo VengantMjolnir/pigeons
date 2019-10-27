@@ -177,6 +177,11 @@ public class PigeonController : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("I Hit something! " + collision.gameObject.name);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         CameraBound bound = other.GetComponent<CameraBound>();
@@ -186,7 +191,11 @@ public class PigeonController : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Balloon"))
         {
-            other.gameObject.SetActive(false);
+            BalloonController balloon = other.GetComponent<BalloonController>();
+            if (balloon)
+            {
+                balloon.Pop();
+            }
         }
     }
 
