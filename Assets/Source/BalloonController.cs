@@ -24,7 +24,7 @@ public class BalloonController: MonoBehaviour
 
     public void Pop()
     {
-        GameObject go = Instantiate(PopPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+        GameObject go = Instantiate(PopPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
         Destroy(go, 5f);
         Destroy(gameObject);
     }

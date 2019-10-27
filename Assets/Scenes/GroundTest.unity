@@ -971,6 +971,7 @@ MonoBehaviour:
   VerticalAxis: Vertical
   FlapButton: Jump
   PeckButton: Fire1
+  PoopButton: Fire2
   DiveButton: Fire3
   LateralForce: 2.5
   BobForce: 2
@@ -1058,6 +1059,9 @@ MonoBehaviour:
   MaxSoaringSpeed: 20
   HeadingLerpFactor: 0.04
   animator: {fileID: 605885647}
+  poojectile: {fileID: 6074652991328166882, guid: 60a19b99defc942e885eea089931846e,
+    type: 3}
+  PooPower: 30
 --- !u!54 &200225546
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4548,6 +4552,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: bbe73deae0319f643af6b89913b1031b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: bbe73deae0319f643af6b89913b1031b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.25
@@ -4603,10 +4611,6 @@ PrefabInstance:
     - target: {fileID: 400002, guid: bbe73deae0319f643af6b89913b1031b, type: 3}
       propertyPath: m_LocalScale.z
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bbe73deae0319f643af6b89913b1031b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbe73deae0319f643af6b89913b1031b, type: 3}

@@ -10,6 +10,7 @@ public class PigeonController : MonoBehaviour
     public string VerticalAxis = "Vertical";
     public string FlapButton = "Jump";
     public string PeckButton = "Fire1";
+    public string PoopButton = "Fire2";
     public string DiveButton = "Fire3";
     [Header("Ground Movement")]
     public float LateralForce = 2.5f;
@@ -33,6 +34,9 @@ public class PigeonController : MonoBehaviour
     public float HeadingLerpFactor = 0.04f;
     [Header("Dependencies")]
     public Animator animator;
+    [Header("Projectile")]
+    public GameObject poojectile;
+    public float PooPower = 1;
 
     // Flight
     private bool _flapRequested = false;
@@ -90,6 +94,16 @@ public class PigeonController : MonoBehaviour
         else if (_timeSinceLastFlap < FlapCooldown)
         {
             _timeSinceLastFlap += Time.deltaTime;
+        }
+
+        if (Input.GetButtonDown(PoopButton))
+        {
+            GameObject poop = Instantiate(poojectile, transform.position + Vector3.down * 0.5f, Quaternion.identity);
+            Rigidbody pooBody = poop.GetComponent<Rigidbody>();
+            if (pooBody)
+            {
+                pooBody.AddForce(Vector3.down * PooPower, ForceMode.Impulse);
+            }
         }
 
         float h = Input.GetAxis(HorizontalAxis);
