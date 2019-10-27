@@ -509,9 +509,13 @@ MonoBehaviour:
   HorizontalAxis: Horizontal
   VerticalAxis: Vertical
   FlapButton: Jump
+  PeckButton: Fire1
+  PoopButton: Fire2
+  DiveButton: Fire3
   LateralForce: 2.5
   BobForce: 2
   BobInterval: 0.5
+  PeckDuration: 1.5
   GroundClearance: 1.25
   MaxHeight: 20
   CounterGravityForceMod: 400
@@ -593,6 +597,9 @@ MonoBehaviour:
   MaxSoaringSpeed: 20
   HeadingLerpFactor: 0.04
   animator: {fileID: 1887803211}
+  poojectile: {fileID: 6074652991328166882, guid: 60a19b99defc942e885eea089931846e,
+    type: 3}
+  PooPower: 50
 --- !u!54 &200225546
 Rigidbody:
   m_ObjectHideFlags: 0
