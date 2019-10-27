@@ -24,6 +24,6 @@ public class BalloonController: MonoBehaviour
 
     private void OnDisable()
     {
-        Instantiate(PopPrefab, transform.position, Quaternion.identity);
+        Instantiate(PopPrefab, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
     }
 }
