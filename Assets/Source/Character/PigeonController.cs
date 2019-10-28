@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class PigeonController : MonoBehaviour
@@ -34,9 +33,15 @@ public class PigeonController : MonoBehaviour
     public float HeadingLerpFactor = 0.04f;
     [Header("Dependencies")]
     public Animator animator;
-    [Header("Projectile")]
+    public Transform visual;
+    [Header("Actions")]
+    public List<Transform> UIPoopObjects;
     public GameObject poojectile;
     public float PooPower = 1;
+    public float PopForceBurst = 10f;
+    public float PopStretchTime = 0.5f;
+    public AnimationCurve PopStretchCurve;
+    public float RechargeTime = 0.75f;
 
     // Flight
     private bool _flapRequested = false;
@@ -47,6 +52,9 @@ public class PigeonController : MonoBehaviour
     private bool _onGround = true;
     private float _distanceFromGround;
     private Vector3 _desiredDirection;
+    private bool _isStretching = false;
+    private float _rechargeTimer;
+    private int _topPoopIndex;
     // Ground
     private float _bobDelay;
     private bool _walkRequested;
@@ -66,6 +74,8 @@ public class PigeonController : MonoBehaviour
         _transform = GetComponent<Transform>();
 
         ResetIdle(true);
+        _topPoopIndex = UIPoopObjects.Count - 1;
+        _rechargeTimer = RechargeTime;
     }
 
     private void ResetIdle(bool pickNewTime = false)
@@ -80,10 +90,24 @@ public class PigeonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (_topPoopIndex < UIPoopObjects.Count - 1)
+        {
+            if (_rechargeTimer > 0f)
+            {
+                _rechargeTimer -= Time.deltaTime;
+            }
+            else
+            {
+                _topPoopIndex++;
+                UIPoopObjects[_topPoopIndex].gameObject.SetActive(true);
+                _rechargeTimer = RechargeTime;
+            }
+        }
+
         bool idle = true;
         if (Input.GetButtonDown(FlapButton))
         {
-            animator.SetTrigger(FLAP);
+            animator.Play(FLAP);
             if (_timeSinceLastFlap >= FlapCooldown)
             {
                 _flapRequested = true;
@@ -96,14 +120,20 @@ public class PigeonController : MonoBehaviour
             _timeSinceLastFlap += Time.deltaTime;
         }
 
-        if (Input.GetButtonDown(PoopButton))
+        if (!_onGround && Input.GetButtonDown(PoopButton))
         {
-            GameObject poop = Instantiate(poojectile, transform.position + Vector3.down * 0.5f, Quaternion.identity);
-            Rigidbody pooBody = poop.GetComponent<Rigidbody>();
-            if (pooBody)
+            if (_topPoopIndex >= 0)
             {
-                pooBody.AddForce(Vector3.down * PooPower, ForceMode.Impulse);
+                PoopAction(_rigidbody.velocity / 2f);
+                UIPoopObjects[_topPoopIndex].gameObject.SetActive(false);
+                _topPoopIndex--;
+                _rechargeTimer = RechargeTime;
             }
+        }
+
+        if (Input.GetButtonDown(DiveButton) && !_onGround)
+        {
+            Dash();
         }
 
         float h = Input.GetAxis(HorizontalAxis);
@@ -142,7 +172,22 @@ public class PigeonController : MonoBehaviour
         }
         else
         {
+            if (!_onGround)
+            {
+                _idleTime = 1f;
+            }
             ResetIdle();
+        }
+    }
+
+    private void PoopAction(Vector3 initialVelocity)
+    {
+        GameObject poop = Instantiate(poojectile, transform.position + Vector3.down * 0.5f, Quaternion.identity);
+        Rigidbody pooBody = poop.GetComponent<Rigidbody>();
+        if (pooBody)
+        {
+            pooBody.velocity = initialVelocity;
+            pooBody.AddForce(Vector3.down * PooPower, ForceMode.Impulse);
         }
     }
 
@@ -237,6 +282,13 @@ public class PigeonController : MonoBehaviour
             _rigidbody.AddForce(Vector3.up * CounterGravityForce.Evaluate(_distanceFromGround / MaxHeight) * CounterGravityForceMod * Time.deltaTime);
         }
 
+        if (_desiredDirection == Vector3.zero)
+        {
+            Vector3 desiredVelocity = _rigidbody.velocity.normalized;
+            {
+                _desiredDirection = desiredVelocity;
+            }
+        }
         if (_desiredDirection != Vector3.zero)
         {
             Vector3 desiredVelocity = _desiredDirection.normalized;
@@ -268,11 +320,27 @@ public class PigeonController : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Balloon"))
         {
+            Vector3 dir = other.transform.position - _transform.position;
+            dir.Normalize();
+            float dot = Vector3.Dot(dir, visual.forward);
+            var speed = _rigidbody.velocity.magnitude;
+
             BalloonController balloon = other.GetComponent<BalloonController>();
-            if (balloon)
+
+            if (balloon && dot > balloon.PopCoefficient && speed > balloon.RequiredSpeed)
             {
                 balloon.Pop();
             }
+            else
+            {
+                _rigidbody.AddForce(dir * -PopForceBurst, ForceMode.Impulse);
+            }
+        }
+
+        Collectible collectible = other.GetComponent<Collectible>();
+        if (collectible != null)
+        {
+            collectible.Pop();
         }
     }
 
@@ -282,6 +350,46 @@ public class PigeonController : MonoBehaviour
         if (bound != null)
         {
             CameraController.Instance.LeftCameraBound(bound);
+        }
+    }
+
+    private void Dash()
+    {
+        _rigidbody.AddForce(visual.forward * PopForceBurst, ForceMode.Impulse);
+        StartCoroutine(PopStretchRoutine());
+    }
+
+    private IEnumerator PopStretchRoutine()
+    {
+        if (!_isStretching)
+        {
+            _isStretching = true;
+            WaitForEndOfFrame wait = new WaitForEndOfFrame();
+            Vector3 originalScale = visual.localScale;
+            Vector3 scale = originalScale;
+
+            bool pooped = false;
+            float time = Time.time;
+            float targetTime = time + PopStretchTime;
+            while (time < targetTime)
+            {
+                float t = 1.0f - (targetTime - time) / PopStretchTime;
+                visual.localScale = scale;
+                float s = PopStretchCurve.Evaluate(t);
+                if (s > 0.5 && !pooped)
+                {
+                    pooped = true;
+                    PoopAction(_rigidbody.velocity / -8f);
+                }
+                scale.z = s * originalScale.z;
+                scale.x = (1f / s) * originalScale.x;
+                scale.y = (1f / s) * originalScale.y;
+                visual.localScale = scale;
+                yield return wait;
+                time = Time.time;
+            }
+            visual.localScale = originalScale;
+            _isStretching = false;
         }
     }
 }

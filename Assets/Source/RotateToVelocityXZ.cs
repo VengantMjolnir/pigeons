@@ -18,7 +18,7 @@ public class RotateToVelocityXZ : MonoBehaviour
         {
             Quaternion look = Quaternion.LookRotation(v);
             float angle = Vector3.SignedAngle(transform.forward, v, Vector3.up);
-            Debug.Log("Turning: " + angle);
+            
             Quaternion roll = Quaternion.Euler(0, 0, angle * rollAmount);
             look *= roll;
             transform.rotation = Quaternion.Slerp(transform.rotation, look, lerpFactor);

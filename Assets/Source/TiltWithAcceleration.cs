@@ -13,7 +13,7 @@ public class TiltWithAcceleration : MonoBehaviour
     void FixedUpdate()
     {
         float pitch = (body.velocity.y / pitchLimit) * angleLimits.x;
-        Debug.Log("Pitch: " + pitch);
+        
         Vector3 angles = transform.rotation.eulerAngles;
         angles.x = pitch;
 

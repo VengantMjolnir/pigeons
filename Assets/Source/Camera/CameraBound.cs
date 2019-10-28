@@ -8,6 +8,7 @@ public class CameraBound : MonoBehaviour
     public float distance = 10f;
     public float height = 4f;
     public float angle = 0f;
+	public bool overrideOthers = false;
 
     private MeshRenderer _mesh;
 

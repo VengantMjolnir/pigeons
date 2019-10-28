@@ -12,9 +12,10 @@ public class CameraController : MonoBehaviour
     public float defaultDistance = 15;
     public float defaultHeight = 10;
 
-    [Header("Bounds Visulization Controls")]
+    [Header("Bounds Visualization Controls")]
     public bool showBoundsInGame = true;
     public bool showBoundsInEditor = true;
+    public bool logBoundChanges = false;
 
     private Transform _transform;
     private float _angle;
@@ -36,9 +37,17 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    private void Log(string message)
+    {
+        if (logBoundChanges)
+        {
+            Debug.Log(message);
+        }
+    }
+
     public void EnteredCameraBound(CameraBound bound)
     {
-        Debug.Log("Entered camera bound " + bound.name);
+        Log("Entered camera bound " + bound.name);
         if (_activeBounds.Contains(bound) == false)
         {
             _activeBounds.Add(bound);
@@ -47,7 +56,7 @@ public class CameraController : MonoBehaviour
 
     public void LeftCameraBound(CameraBound bound)
     {
-        Debug.Log("Left camera bound " + bound.name);
+        Log("Left camera bound " + bound.name);
         if (_activeBounds.Contains(bound))
         {
             _activeBounds.Remove(bound);
@@ -78,13 +87,21 @@ public class CameraController : MonoBehaviour
             targetAngle = 0;
             targetDistance = 0;
             targetHeight = 0;
+            int count = _activeBounds.Count;
             foreach (CameraBound bound in _activeBounds)
             {
+                if (bound.overrideOthers)
+                {
+                    targetAngle = bound.angle;
+                    targetDistance = bound.distance;
+                    targetHeight = bound.height;
+                    count = 1;
+                    break;
+                }
                 targetAngle += bound.angle;
                 targetDistance += bound.distance;
                 targetHeight += bound.height;
             }
-            int count = _activeBounds.Count;
             targetAngle /= count;
             targetDistance /= count;
             targetHeight /= count;

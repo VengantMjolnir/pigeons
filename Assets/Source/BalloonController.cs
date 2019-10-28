@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class BalloonController: MonoBehaviour
 {
+    public float PopCoefficient = 0.91f;
+    public float RequiredSpeed = 10f;
     public float OffsetScale = Mathf.PI;
     public GameObject PopPrefab;
+
+
     private Vector3 _startPos;
     private float _arbitraryOffset;
 
