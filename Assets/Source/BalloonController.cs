@@ -8,7 +8,7 @@ public class BalloonController: MonoBehaviour
     public float RequiredSpeed = 10f;
     public float OffsetScale = Mathf.PI;
     public GameObject PopPrefab;
-
+    public RuntimeTransformSet balloonSet;
 
     private Vector3 _startPos;
     private float _arbitraryOffset;
@@ -18,6 +18,8 @@ public class BalloonController: MonoBehaviour
     {
         _startPos = transform.position;
         _arbitraryOffset = Random.value * OffsetScale;
+
+        balloonSet.Add(transform);
     }
 
     // Update is called once per frame
@@ -30,6 +32,6 @@ public class BalloonController: MonoBehaviour
     {
         GameObject go = Instantiate(PopPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
         Destroy(go, 5f);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

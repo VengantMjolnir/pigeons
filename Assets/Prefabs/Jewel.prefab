@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5921062029501131492}
   - component: {fileID: 5427519579153677655}
   m_Layer: 0
-  m_Name: jewel (1)
+  m_Name: Jewel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,14 +25,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1159594069561259138}
-  m_LocalRotation: {x: -0, y: 0.9199439, z: -0, w: -0.39205012}
+  m_LocalRotation: {x: 0, y: -0.9199448, z: 0, w: 0.39204806}
   m_LocalPosition: {x: -70.934, y: 1.9159999, z: 30.072}
-  m_LocalScale: {x: 0.40000114, y: 0.40000004, z: 0.40000114}
+  m_LocalScale: {x: 0.0200001, y: 0.0200001, z: 0.0200001}
   m_Children:
   - {fileID: 8303799686562217627}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -133.83601, z: 0}
 --- !u!135 &5921062029501131492
 SphereCollider:
   m_ObjectHideFlags: 0

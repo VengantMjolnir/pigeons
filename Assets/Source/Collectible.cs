@@ -13,11 +13,10 @@ public class Collectible : MonoBehaviour
         transform.Rotate(spinValues * Time.deltaTime);
     }
 
-
     public void Pop()
     {
         GameObject go = Instantiate(PopPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
         Destroy(go, 5f);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

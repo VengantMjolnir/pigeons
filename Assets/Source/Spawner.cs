@@ -5,7 +5,6 @@ using UnityEngine;
 [SelectionBase]
 public class Spawner : MonoBehaviour
 {
-    public GameObject objectToSpawn;
     public GameObject initialObject;
     public float spawnWaitTime = 10f;
 
@@ -19,7 +18,7 @@ public class Spawner : MonoBehaviour
 
     public void Update()
     {
-        if (_spawnedObject == null && !spawning)
+        if (_spawnedObject.activeInHierarchy == false && !spawning)
         {
             StartCoroutine(SpawnObjectRoutine());
         }
@@ -29,8 +28,8 @@ public class Spawner : MonoBehaviour
     {
         spawning = true;
         yield return new WaitForSeconds(spawnWaitTime);
-        _spawnedObject = Instantiate(objectToSpawn, transform);
-        _spawnedObject.transform.localPosition = Vector3.zero;
+        _spawnedObject.SetActive(true);
+        _spawnedObject.transform.localPosition = Vector3.zero;       
         spawning = false;
     }
 }

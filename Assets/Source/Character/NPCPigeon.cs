@@ -43,7 +43,7 @@ public class NPCPigeon : MonoBehaviour
 
     private void PerformIdleAction()
     {
-        int choice = Random.RandomRange(0, 10);
+        int choice = Random.Range(0, 10);
         switch (choice)
         {
             case 0:

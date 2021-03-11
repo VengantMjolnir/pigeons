@@ -11,6 +11,7 @@ public class PigeonController : MonoBehaviour
     public string PeckButton = "Fire1";
     public string PoopButton = "Fire2";
     public string DiveButton = "Fire3";
+    public string BoostButton = "Boost";
     [Header("Ground Movement")]
     public float LateralForce = 2.5f;
     public float BobForce = 2f;
@@ -34,12 +35,14 @@ public class PigeonController : MonoBehaviour
     [Header("Dependencies")]
     public Animator animator;
     public Transform visual;
+    public RuntimeTransformSet balloons;
     [Header("Actions")]
     public List<Transform> UIPoopObjects;
     public GameObject poojectile;
     public float PooPower = 1;
     public float PopForceBurst = 10f;
-    public float PopStretchTime = 0.5f;
+    public float DashStretchTime = 0.5f;
+    public float MaxDashSeekDistance = 10f;
     public AnimationCurve PopStretchCurve;
     public float RechargeTime = 0.75f;
 
@@ -263,7 +266,12 @@ public class PigeonController : MonoBehaviour
     {
         if (_bobDelay > 0 || _desiredDirection == Vector3.zero)
         {
-            _bobDelay -= Time.deltaTime;
+            float time = Time.deltaTime;
+            if (Input.GetButton(BoostButton))
+            {
+                time *= 1.2f;
+            }
+            _bobDelay -= time;
             return;
         }
         
@@ -286,12 +294,12 @@ public class PigeonController : MonoBehaviour
         {
             Vector3 desiredVelocity = _rigidbody.velocity.normalized;
             {
-                _desiredDirection = desiredVelocity;
+                _desiredDirection = desiredVelocity * 0.6f;
             }
         }
         if (_desiredDirection != Vector3.zero)
         {
-            Vector3 desiredVelocity = _desiredDirection.normalized;
+            Vector3 desiredVelocity = _desiredDirection;
             desiredVelocity *= SoaringFalloff.Evaluate(_distanceFromGround / MaxHeight) * MaxSoaringSpeed;
             desiredVelocity = Vector3.Lerp(_rigidbody.velocity, desiredVelocity, HeadingLerpFactor);
             desiredVelocity.y = _rigidbody.velocity.y;
@@ -355,11 +363,34 @@ public class PigeonController : MonoBehaviour
 
     private void Dash()
     {
-        _rigidbody.AddForce(visual.forward * PopForceBurst, ForceMode.Impulse);
-        StartCoroutine(PopStretchRoutine());
+        Transform target = null;
+        float closest = MaxDashSeekDistance;
+        Vector3 dashDirection = visual.forward;
+        foreach (Transform t in balloons.Items)
+        {
+            if (t.gameObject.activeInHierarchy == false)
+            {
+                continue;
+            }
+
+            Vector3 dir = t.position - _transform.position;
+            if (Vector3.Dot(dir, visual.forward) > 0.4f)
+            {
+                //Debug.DrawLine(_transform.position, t.position, Color.red, 5f);
+                float dist = Vector3.Distance(_transform.position, t.position);
+                if (dist < closest)
+                {
+                    target = t;
+                    closest = dist;
+                    dashDirection = dir.normalized;
+                }
+            }
+        }
+        _rigidbody.AddForce(dashDirection * PopForceBurst, ForceMode.Impulse);
+        StartCoroutine(DashStretchRoutine());
     }
 
-    private IEnumerator PopStretchRoutine()
+    private IEnumerator DashStretchRoutine()
     {
         if (!_isStretching)
         {
@@ -370,10 +401,10 @@ public class PigeonController : MonoBehaviour
 
             bool pooped = false;
             float time = Time.time;
-            float targetTime = time + PopStretchTime;
+            float targetTime = time + DashStretchTime;
             while (time < targetTime)
             {
-                float t = 1.0f - (targetTime - time) / PopStretchTime;
+                float t = 1.0f - (targetTime - time) / DashStretchTime;
                 visual.localScale = scale;
                 float s = PopStretchCurve.Evaluate(t);
                 if (s > 0.5 && !pooped)
